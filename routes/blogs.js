@@ -4,7 +4,6 @@ var db = require('../db')
 
 router.get('/', function (req, res) {
 
-
     let postsPerPage = req.query.postsPerPage
     let currentPage = req.query.currentPage
     let offset = postsPerPage*currentPage

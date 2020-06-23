@@ -1,6 +1,7 @@
 var express = require('express');
 var http = require('http');
 var cors = require('cors')
+const formData = require('express-form-data')
 
 var services = require('./routes/services')
 var industries = require('./routes/industries')
@@ -16,6 +17,7 @@ app.use(
     })
 );
 
+app.use(formData.parse())
 app.use('/services', services)
 app.use('/industries', industries)
 app.use('/homepage', homepage)
