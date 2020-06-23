@@ -34,6 +34,13 @@ router.get('/clients', function (req, res) {
     })
 });
 
+router.get('/aboutus', function (req, res) {
+    db.query('SELECT * FROM aboutus', function(err, rows) {
+        if (err) throw err
+        res.send(rows)
+    })
+})
+
 /**************************************************************
 ************************* ADMIN PANEL *************************
 **************************************************************/
