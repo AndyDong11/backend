@@ -2,6 +2,7 @@ var express = require('express')
 var router = express.Router();
 var db = require('../db');
 const e = require('express');
+const { route } = require('./services');
 
 /**************************************************************
 *************************** WEBSITE ***************************
@@ -122,6 +123,18 @@ router.post('/deleteservice', function (req, res) {
 
     let query = 'DELETE FROM homeservices WHERE id=' + id
     db.query(query, function (err, rows) {
+        if (err) throw err
+        res.send(rows)
+    })
+})
+
+/** about us */
+router.post('/updateaboutus', function(req, res) {
+    let content = req.body.content
+
+    let query = 'UPDATE aboutus SET content=\'' + content + '\''
+
+    db.query(query, function(err, rows) {
         if (err) throw err
         res.send(rows)
     })
