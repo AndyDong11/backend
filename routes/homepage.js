@@ -4,9 +4,7 @@ var db = require('../db');
 const e = require('express');
 const { route } = require('./services');
 
-/**************************************************************
-*************************** WEBSITE ***************************
-**************************************************************/
+/** Banner */
 
 router.get('/banner', function (req, res) {
     db.query('SELECT * FROM homepagebanner', function (err, rows) {
@@ -15,6 +13,23 @@ router.get('/banner', function (req, res) {
     })
 });
 
+router.post('/banner/add', function(req, res) {
+    const headerContent = req.body.headerContent
+    const imageText = req.body.imageText
+    const imageLink = req.body.imageLink
+    const buttonText = req.body.buttonText
+    const buttonLink = req.body.buttonLink
+
+    const query = 'INSERT INTO banner (headerContent, imageText, imageLink, buttonText, buttonLink) VALUES (\'' + headerContent + '\', \'' + imageText + '\', \'' + imageLink + '\', \'' + buttonText + '\', \'' + buttonLink + '\')'
+
+    db.query(query, function(err, rows) {
+        if (err) throw err
+        res.send(rows)
+    })
+})
+
+/** Services */
+
 router.get('/services', function (req, res) {
     db.query('SELECT * FROM homeservices', function (err, rows) {
         if (err) throw err
@@ -22,35 +37,6 @@ router.get('/services', function (req, res) {
     })
 });
 
-router.get('/whatwedo', function (req, res) {
-    db.query('SELECT * FROM whatwedo', function (err, rows) {
-        if (err) throw err
-        res.send(rows)
-    })
-});
-
-router.get('/clients', function (req, res) {
-    db.query('SELECT * FROM clients', function (err, rows) {
-        if (err) throw err
-        res.send(rows)
-    })
-});
-
-router.get('/aboutus', function (req, res) {
-    db.query('SELECT * FROM aboutus', function (err, rows) {
-        if (err) throw err
-        res.send(rows)
-    })
-})
-
-/**************************************************************
-************************* ADMIN PANEL *************************
-**************************************************************/
-
-/** Banner */
-
-
-/** Services */
 router.get('/servicecount', function (req, res) {
 
     let searchCriteria = req.query.searchCriteria
@@ -129,18 +115,34 @@ router.post('/deleteservice', function (req, res) {
 })
 
 /** about us */
-router.post('/updateaboutus', function(req, res) {
+
+router.get('/aboutus', function (req, res) {
+    db.query('SELECT * FROM aboutus', function (err, rows) {
+        if (err) throw err
+        res.send(rows)
+    })
+})
+
+router.post('/updateaboutus', function (req, res) {
     let content = req.body.content
 
     let query = 'UPDATE aboutus SET content=\'' + content + '\''
 
-    db.query(query, function(err, rows) {
+    db.query(query, function (err, rows) {
         if (err) throw err
         res.send(rows)
     })
 })
 
 /** WHATWEDO */
+
+router.get('/whatwedo', function (req, res) {
+    db.query('SELECT * FROM whatwedo', function (err, rows) {
+        if (err) throw err
+        res.send(rows)
+    })
+});
+
 router.get('/whatwedocount', function (req, res) {
 
     let searchCriteria = req.query.searchCriteria
@@ -218,6 +220,14 @@ router.post('/deletewhatwedo', function (req, res) {
 })
 
 /** CLIENTS */
+
+router.get('/clients', function (req, res) {
+    db.query('SELECT * FROM clients', function (err, rows) {
+        if (err) throw err
+        res.send(rows)
+    })
+});
+
 router.get('/clientcount', function (req, res) {
 
     let searchCriteria = req.query.searchCriteria
