@@ -1,29 +1,48 @@
 var express = require('express');
 var http = require('http');
 var cors = require('cors')
-const formData = require('express-form-data')
+var cookieParser = require('cookie-parser')
+var dotenv = require('dotenv')
 
+var user = require('./routes/user')
 var services = require('./routes/services')
 var industries = require('./routes/industries')
 var homepage = require('./routes/homepage')
 var about = require('./routes/about')
 var blogs = require('./routes/blogs')
 var news = require('./routes/news')
+var contact = require('./routes/contact')
+var faqs = require('./routes/faqs')
+var privacypolicy = require('./routes/privacypolicy')
+var careers = require('./routes/careers')
+var upload = require('./routes/upload')
+var footer = require('./routes/footer')
 
 var app = express();
 
+dotenv.config()
+
 app.use(
     cors({
-        origin: "http://localhost:3000", // restrict calls to those this address
+        origin: "http://localhost:3000", // restrict calls to this address
+        credentials: true
     })
 );
 
-app.use(formData.parse())
+app.use(cookieParser())
+
+app.use('/user', user)
 app.use('/services', services)
 app.use('/industries', industries)
 app.use('/homepage', homepage)
 app.use('/about', about)
 app.use('/blogs', blogs)
 app.use('/news', news)
+app.use('/contact', contact)
+app.use('/faqs', faqs)
+app.use('/privacypolicy', privacypolicy)
+app.use('/careers', careers)
+app.use('/upload', upload)
+app.use('/footer', footer)
 
 http.createServer(app).listen(3001);

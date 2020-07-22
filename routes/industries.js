@@ -1,88 +1,81 @@
 var express = require('express')
 var router = express.Router();
 var db = require('../db')
-
+var multer = require('multer')
+var upload = multer({ dest: 'uploads/' })
 
 
 router.get('/', function (req, res) {
-    db.query('SELECT * FROM industries', function (err, rows) {
+    let query = 'SELECT * FROM industriesindustries'
+    db.query(query, function (err, rows) {
         if (err) throw err
         res.send(rows)
     })
 });
 
 router.get('/industrycount', function (req, res) {
-
-    let searchCriteria = req.query.searchCriteria
-
-    db.query('SELECT COUNT(*) FROM industries WHERE title LIKE \'%' + searchCriteria + '%\'', function (err, rows) {
+    let searchCriteria = '%' + req.query.searchCriteria + '%'
+    let query = 'SELECT COUNT(*) FROM industriesindustries WHERE title LIKE ?'
+    let queryData = [searchCriteria]
+    db.query(query, queryData, function (err, rows) {
         if (err) throw err
         res.send(rows)
     })
 });
 
-router.get('/paginatedindustries', function (req, res) {
-
-    let itemsPerPage = req.query.itemsPerPage
-    let currentPage = req.query.currentPage
-    let searchCriteria = req.query.searchCriteria
+router.get('/industriesonpage', function (req, res) {
+    let itemsPerPage = parseInt(req.query.itemsPerPage)
+    let currentPage = parseInt(req.query.currentPage)
+    let searchCriteria = '%' + req.query.searchCriteria + '%'
     let offset = itemsPerPage * currentPage
-
-    let query = 'SELECT * FROM industries WHERE title LIKE \'%' + searchCriteria + '%\' ORDER BY ID LIMIT ' + offset + ', ' + itemsPerPage
-
-    db.query(query, function (err, rows) {
+    let query = 'SELECT * FROM industriesindustries WHERE title LIKE ? ORDER BY ID LIMIT ?, ?'
+    let queryData = [searchCriteria, offset, itemsPerPage]
+    db.query(query, queryData, function (err, rows) {
         if (err) throw err
         res.send(rows)
     })
 });
 
-
-router.post('/addindustry', function (req, res) {
+router.post('/addindustry', upload.none(), function (req, res) {
     let icon = req.body.icon
     let title = req.body.title
     let content = req.body.content
-
-    let query = 'INSERT INTO industries (icon, title, content) VALUES (\'' + icon + '\', \'' + title + '\', \'' + content + '\')'
-
-    db.query(query, function (err, rows) {
+    let query = 'INSERT INTO industriesindustries (icon, title, content) VALUES (?, ?, ?)'
+    let queryData = [icon, title, content]
+    db.query(query, queryData, function (err, rows) {
         if (err) throw err
         res.send(rows)
     })
 })
 
 router.get('/getindustry', function (req, res) {
-
-    let industry = req.query.service
-
-    let query = 'SELECT * FROM industries WHERE id=\'' + industry + '\''
-
-    db.query(query, function (err, rows) {
+    let id = req.query.id
+    let query = 'SELECT * FROM industriesindustries WHERE id=?'
+    let queryData = [id]
+    db.query(query, queryData, function (err, rows) {
         if (err) throw err
         res.send(rows)
     })
 })
 
-router.post('/updateindustry', function (req, res) {
-
+router.post('/updateindustry', upload.none(), function (req, res) {
     let id = req.body.id
     let icon = req.body.icon
     let title = req.body.title
     let content = req.body.content
-
-
-    let query = 'UPDATE industries SET icon=\'' + icon + '\', title=\'' + title + '\', content=\'' + content + '\' WHERE id=' + id
-    db.query(query, function (err, rows) {
+    let query = 'UPDATE industriesindustries SET icon=?, title=?, content=? WHERE id=?'
+    let queryData = [icon, title, content, id]
+    db.query(query, queryData, function (err, rows) {
         if (err) throw err
         res.send(rows)
     })
 })
 
-router.post('/deleteindustry', function (req, res) {
-
-    let id = req.body.id
-
-    let query = 'DELETE FROM industries WHERE id=' + id
-    db.query(query, function (err, rows) {
+router.get('/deleteindustry', upload.none(), function (req, res) {
+    let id = parseInt(req.query.id)
+    let query = 'DELETE FROM industriesindustries WHERE id=?'
+    let queryData = [id]
+    db.query(query, queryData, function (err, rows) {
         if (err) throw err
         res.send(rows)
     })
