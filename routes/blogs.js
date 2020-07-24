@@ -55,6 +55,17 @@ router.get('/postcount', function (req, res) {
     })
 });
 
+router.get('/getblogbytitle', function (req, res) {
+    let { title } = req.query
+    let query = 'SELECT * FROM blogs WHERE title=?'
+    let queryData = [title]
+    db.query(query, queryData, function(err, rows) {
+        if (err) throw err
+        res.send(rows)
+    })
+
+})
+
 router.get('/getblog', function (req, res) {
     const id = req.query.id
     db.query('SELECT * FROM blogs WHERE id=' + id, function (err, rows) {

@@ -58,10 +58,11 @@ router.get('/deleteservice', upload.none(), function (req, res) {
 router.post('/addservice', upload.none(), function (req, res) {
     let icon = req.body.icon
     let sideIcon = req.body.sideIcon
+    let serviceDetail = req.body.serviceDetail
     let title = req.body.title
     let content = req.body.content
-    let query = 'INSERT INTO serviceservices (icon, sideIcon, title, content) VALUES (?, ?, ?, ?)'
-    let queryData = [icon, sideIcon, title, content]
+    let query = 'INSERT INTO serviceservices (icon, sideIcon, serviceDetail, title, content) VALUES (?, ?, ?, ?, ?)'
+    let queryData = [icon, sideIcon, serviceDetail, title, content]
     db.query(query, queryData, function (err, rows) {
         if (err) throw err
         res.send(rows)
@@ -82,10 +83,11 @@ router.post('/updateservice', upload.none(), function (req, res) {
     let id = req.body.id
     let icon = req.body.icon
     let sideIcon = req.body.sideIcon
+    let serviceDetail = req.body.serviceDetail
     let title = req.body.title
     let content = req.body.content
-    let query = 'UPDATE serviceservices SET icon=?, sideIcon=?, title=?, content=? WHERE id=?'
-    let queryData = [icon, sideIcon, title, content, id]
+    let query = 'UPDATE serviceservices SET icon=?, sideIcon=?, serviceDetail=?, title=?, content=? WHERE id=?'
+    let queryData = [icon, sideIcon, serviceDetail, title, content, id]
     db.query(query, queryData, function (err, rows) {
         if (err) throw err
         res.send(rows)
@@ -174,6 +176,15 @@ router.post('/updatetestimony', upload.none(), function (req, res) {
 /** service details */
 router.get('/getservicedetails', function (req, res) {
     let query = 'SELECT * FROM servicesservicedetails'
+    db.query(query, function (err, rows) {
+        if (err) throw err
+        res.send(rows)
+    })
+})
+
+
+router.get('/getservicedetailtitles', function (req, res) {
+    let query = 'SELECT serviceTitle FROM servicesservicedetails'
     db.query(query, function (err, rows) {
         if (err) throw err
         res.send(rows)
