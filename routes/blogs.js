@@ -17,7 +17,7 @@ router.get('/', function (req, res) {
     let postsPerPage = req.query.postsPerPage
     let currentPage = req.query.currentPage
     let offset = postsPerPage * currentPage
-    let query = 'SELECT * FROM blogs ORDER BY ID LIMIT ' + offset + ', ' + postsPerPage
+    let query = 'SELECT * FROM blogs ORDER BY postedDate DESC LIMIT ' + offset + ', ' + postsPerPage
     db.query(query, function (err, rows) {
         if (err) throw err
         res.send(rows)
@@ -59,11 +59,29 @@ router.get('/getblogbytitle', function (req, res) {
     let { title } = req.query
     let query = 'SELECT * FROM blogs WHERE title=?'
     let queryData = [title]
-    db.query(query, queryData, function(err, rows) {
+    db.query(query, queryData, function (err, rows) {
         if (err) throw err
         res.send(rows)
     })
+})
 
+router.get('/getrelatedblogs', function (req, res) {
+    let { id, postedDate } = req.query
+    console.log(req.query)
+    let query =
+        `
+        (SELECT * FROM blogs WHERE (postedDate > ? AND id != ?) ORDER BY postedDate LIMIT 4)
+        UNION ALL
+        (SELECT * FROM blogs WHERE postedDate > ? ORDER BY postedDate LIMIT (4 - LEAST(4, COUNT(postedDate = ?)) - LEAST(COUNT(postedDate<?), CEILING((4-LEAST(4, COUNT(postedDate=?)))/2.0)))
+        UNION ALL
+        (SELECT * FROM blogs WHERE postedDate < ? ORDER BY postedDate DESC LIMIT (4 - LEAST(4, COUNT(postedDate = ?)) - LEAST(COUNT(postedDate>?), FLOOR((4-LEAST(4, COUNT(postedDate=?)))/2.0)))
+        `
+    let queryData = [postedDate, id, postedDate, postedDate, postedDate, postedDate, postedDate, postedDate]
+    console.log(query)
+    db.query(query, queryData, function (err, rows) {
+        if (err) throw err
+        res.send(rows)
+    })
 })
 
 router.get('/getblog', function (req, res) {
@@ -141,7 +159,7 @@ router.get('/paginatedblogs', function (req, res) {
     let searchCriteria = req.query.searchCriteria
     let offset = itemsPerPage * currentPage
 
-    let query = 'SELECT * FROM blogs WHERE title LIKE \'%' + searchCriteria + '%\' ORDER BY ID LIMIT ' + offset + ', ' + itemsPerPage
+    let query = 'SELECT * FROM blogs WHERE title LIKE \'%' + searchCriteria + '%\' ORDER BY postedDate DESC LIMIT ' + offset + ', ' + itemsPerPage
 
     db.query(query, function (err, rows) {
         if (err) throw err

@@ -5,4 +5,5 @@
 
 # misc
 .env
+.DS_Store
 
