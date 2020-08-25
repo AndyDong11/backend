@@ -4,14 +4,14 @@ var db = require('../db')
 var multer = require('multer')
 var upload = multer({ dest: 'uploads/' })
 var fs = require('fs')
-var s3 = require('../aws_s3')
+// var s3 = require('../aws_s3')
 
-const params = {
-    ACL: 'public-read',
-    Bucket: 'falcnstuff',
-    Body: '',
-    Key: ''
-}
+// const params = {
+//     ACL: 'public-read',
+//     Bucket: 'falcnstuff',
+//     Body: '',
+//     Key: ''
+// }
 
 /** our services */
 router.get('/', function (req, res) {
@@ -228,14 +228,24 @@ router.post('/addservicedetail', upload.single('image'), function (req, res) {
     let { serviceTitle, imageType, imageAlt, content } = req.body
     let query = 'INSERT INTO servicesservicedetails (serviceTitle, image, imageAlt, content) VALUES (?, ?, ?, ?)'
     if (imageType == 'Local') {
-        const fileStream = fs.createReadStream(req.file.path)
-        fileStream.on('error', function (err) { console.log('File Error', err) })
-        params.Body = fileStream
-        params.Key = req.file.filename + '-' + req.file.originalname.split('.')[0]
-        s3.upload(params, (err, data) => {
+        // const fileStream = fs.createReadStream(req.file.path)
+        // fileStream.on('error', function (err) { console.log('File Error', err) })
+        // params.Body = fileStream
+        // params.Key = req.file.filename + '-' + req.file.originalname.split('.')[0]
+        // s3.upload(params, (err, data) => {
+        //     if (err) { console.log("Error", err) }
+        //     if (data) {
+        //         let queryData = [serviceTitle, data.Location, imageAlt, content]
+        //         db.query(query, queryData, function (err, rows) {
+        //             if (err) throw err
+        //             res.send(rows)
+        //         })
+        //     }
+        // })
+        cloudinary.uploader.upload(req.file.path, function (err, data) {
             if (err) { console.log("Error", err) }
             if (data) {
-                let queryData = [serviceTitle, data.Location, imageAlt, content]
+                let queryData = [serviceTitle, data.url, imageAlt, content]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
                     res.send(rows)
@@ -266,14 +276,25 @@ router.post('/updateservicedetail', upload.single('image'), function (req, res) 
     let { id, serviceTitle, imageType, imageAlt, content } = req.body
     let query = 'UPDATE servicesservicedetails SET serviceTitle=?, image=?, imageAlt=?, content=? WHERE id=?'
     if (imageType == 'Local') {
-        const fileStream = fs.createReadStream(req.file.path)
-        fileStream.on('error', function (err) { console.log('File Error', err) })
-        params.Body = fileStream
-        params.Key = req.file.filename + '-' + req.file.originalname.split('.')[0]
-        s3.upload(params, (err, data) => {
+        // const fileStream = fs.createReadStream(req.file.path)
+        // fileStream.on('error', function (err) { console.log('File Error', err) })
+        // params.Body = fileStream
+        // params.Key = req.file.filename + '-' + req.file.originalname.split('.')[0]
+        // s3.upload(params, (err, data) => {
+        //     if (err) { console.log("Error", err) }
+        //     if (data) {
+        //         let queryData = [serviceTitle, data.Location, imageAlt, content, id]
+        //         db.query(query, queryData, function (err, rows) {
+        //             if (err) throw err
+        //             res.send(rows)
+        //         })
+        //     }
+        // })
+
+        cloudinary.uploader.upload(req.file.path, function (err, data) {
             if (err) { console.log("Error", err) }
             if (data) {
-                let queryData = [serviceTitle, data.Location, imageAlt, content, id]
+                let queryData = [serviceTitle, data.url, imageAlt, content, id]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
                     res.send(rows)

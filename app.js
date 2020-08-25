@@ -1,8 +1,8 @@
+require('dotenv').config()
 var express = require('express');
 var http = require('http');
 var cors = require('cors')
 var cookieParser = require('cookie-parser')
-var dotenv = require('dotenv')
 
 var user = require('./routes/user')
 var services = require('./routes/services')
@@ -19,8 +19,6 @@ var upload = require('./routes/upload')
 var footer = require('./routes/footer')
 
 var app = express();
-
-dotenv.config()
 
 app.use(
     cors({
