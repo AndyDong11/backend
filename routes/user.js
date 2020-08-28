@@ -7,11 +7,11 @@ var bcrypt = require('bcrypt')
 var jwt = require('jsonwebtoken')
 
 router.post('/adduser', upload.none(), function (req, res) {
-    let { username, password } = req.body
+    let { username, password, email, firstName, lastName } = req.body
     bcrypt.hash(password, 10, function (err, hash) {
         if (err) throw err
-        let query = 'INSERT INTO users (username, passwrd) VALUES (?, ?)'
-        let queryData = [username, hash]
+        let query = 'INSERT INTO users (username, passwrd, firstName, lastName, email) VALUES (?, ?, ?, ?, ?)'
+        let queryData = [username, hash, firstName, lastName, email]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
             res.send(rows)
