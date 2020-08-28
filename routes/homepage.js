@@ -38,7 +38,10 @@ async function read(file) {
 
         await cloudinary.uploader.upload(file.path, function (err, data) {
             if (err) { reject(err) }
-            if (data) { resolve(data.url) }
+            if (data) {
+                deleteFiles([file]);
+                resolve(data.url)
+            }
         })
 
     })
@@ -554,7 +557,6 @@ router.post('/updatefreeproposal', upload.array('images'), function (req, res) {
         const data = [title, header, buttonText, buttonLink, backgroundImage, backgroundImageAlt, sideImage, sideImageAlt]
         db.query(query, data, function (err, rows) {
             if (err) throw err
-            deleteFiles([req.files]);
             res.send(rows)
         })
     }, reason => { console.log(reason) })

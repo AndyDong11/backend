@@ -4,6 +4,7 @@ var db = require('../db')
 var multer = require('multer')
 var upload = multer({ dest: 'uploads/' })
 var fs = require('fs')
+var cloudinary = require('../cloudinary');
 const deleteFiles = require('./../mixins/deleteFiles');
 // var s3 = require('../aws_s3')
 
@@ -37,7 +38,10 @@ async function read(file) {
 
         await cloudinary.uploader.upload(file.path, function (err, data) {
             if (err) { reject(err) }
-            if (data) { resolve(data.url) }
+            if (data) {
+                deleteFiles([file]);
+                resolve(data.url)
+            }
         })
 
     })
@@ -112,7 +116,6 @@ router.post('/addnews', upload.array('images'), function (req, res) {
         let queryData = [articleLink, category, title, content, author, postedDate, articleImage, articleImageAlt, authorImage, authorImageAlt]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
-            deleteFiles([req.files]);
             res.send(rows)
         })
     }, reason => { console.log(reason) })
@@ -155,7 +158,6 @@ router.post('/updatenews', upload.array('images'), function (req, res) {
         let queryData = [articleLink, category, title, content, author, postedDate, articleImage, articleImageAlt, authorImage, authorImageAlt, id]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
-            deleteFiles([req.files]);
             res.send(rows)
         })
     }, reason => { console.log(reason) })
