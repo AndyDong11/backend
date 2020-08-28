@@ -5,6 +5,7 @@ var fs = require('fs')
 var multer = require('multer');
 var upload = multer({ dest: 'uploads/' })
 var { cloudinary } = require('../cloudinary')
+const deleteFiles = require('./../mixins/deleteFiles');
 // var s3 = require('../aws_s3')
 
 // const params = {
@@ -97,9 +98,9 @@ router.get('/deletebanner', upload.none(), function (req, res) {
 
 router.post('/banner/add', upload.single('image'), function (req, res) {
 
-    let = { bannerHeadline, imageType, imageAlt, buttonText, buttonLink } = req.body
+    let { bannerHeadline, imageType, imageAlt, buttonText, buttonLink } = req.body
     let query = 'INSERT INTO homebanner (bannerHeadline, image, imageAlt, buttonText, buttonLink) VALUES (?, ?, ?, ?, ?)'
-    if (imageType == 'Local') {
+    if (imageType === 'Local') {
         // const fileStream = fs.createReadStream(req.file.path)
         // fileStream.on('error', function (err) { console.log('File Error', err) })
         // params.Body = fileStream
@@ -120,6 +121,7 @@ router.post('/banner/add', upload.single('image'), function (req, res) {
                 let queryData = [bannerHeadline, data.url, imageAlt, buttonText, buttonLink]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -129,6 +131,7 @@ router.post('/banner/add', upload.single('image'), function (req, res) {
         let queryData = [bannerHeadline, req.body.image, imageAlt, buttonText, buttonLink]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }
@@ -158,6 +161,7 @@ router.post('/updatebanner', upload.single('image'), function (req, res) {
                 let queryData = [bannerHeadline, data.url, imageAlt, buttonText, buttonLink, id]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -167,6 +171,7 @@ router.post('/updatebanner', upload.single('image'), function (req, res) {
         let queryData = [bannerHeadline, req.body.image, imageAlt, buttonText, buttonLink, id]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }
@@ -282,6 +287,7 @@ router.post('/updateaboutus', upload.single('image'), function (req, res) {
                 let queryData = [content, buttonText, buttonLink, imageAlt, data.url]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -290,6 +296,7 @@ router.post('/updateaboutus', upload.single('image'), function (req, res) {
     else {
         db.query(query, [content, buttonText, buttonLink, imageAlt, req.body.image], function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }
@@ -451,6 +458,7 @@ router.post('/addclient', upload.single('image'), function (req, res) {
                 let queryData = [clientName, data.url, imageLink, imageAlt]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -460,6 +468,7 @@ router.post('/addclient', upload.single('image'), function (req, res) {
         let queryData = [clientName, req.body.image, imageLink, imageAlt]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }
@@ -493,6 +502,7 @@ router.post('/updateclient', upload.single('image'), function (req, res) {
                 let queryData = [clientName, data.url, imageLink, imageAlt, id]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -503,6 +513,7 @@ router.post('/updateclient', upload.single('image'), function (req, res) {
         let queryData = [clientName, req.body.image, imageLink, imageAlt, id]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }
@@ -543,6 +554,7 @@ router.post('/updatefreeproposal', upload.array('images'), function (req, res) {
         const data = [title, header, buttonText, buttonLink, backgroundImage, backgroundImageAlt, sideImage, sideImageAlt]
         db.query(query, data, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.files]);
             res.send(rows)
         })
     }, reason => { console.log(reason) })
@@ -629,6 +641,7 @@ router.post('/updateaward', upload.single('image'), function (req, res) {
                 let queryData = [awardName, data.url, imageAlt, imageLink, id]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -638,6 +651,7 @@ router.post('/updateaward', upload.single('image'), function (req, res) {
         let data = [awardName, req.body.image, imageAlt, imageLink, id]
         db.query(query, data, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }
@@ -671,6 +685,7 @@ router.post('/addaward', upload.single('image'), function (req, res) {
                 let queryData = [awardName, data.url, imageAlt, imageLink]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -680,6 +695,7 @@ router.post('/addaward', upload.single('image'), function (req, res) {
         let queryData = [awardName, req.body.image, imageAlt, imageLink]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }

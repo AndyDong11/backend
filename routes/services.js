@@ -4,6 +4,7 @@ var db = require('../db')
 var multer = require('multer')
 var upload = multer({ dest: 'uploads/' })
 var fs = require('fs')
+const deleteFiles = require('./../mixins/deleteFiles');
 // var s3 = require('../aws_s3')
 
 // const params = {
@@ -248,6 +249,7 @@ router.post('/addservicedetail', upload.single('image'), function (req, res) {
                 let queryData = [serviceTitle, data.url, imageAlt, content]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -257,6 +259,7 @@ router.post('/addservicedetail', upload.single('image'), function (req, res) {
         let queryData = [serviceTitle, req.body.image, imageAlt, content]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }
@@ -297,6 +300,7 @@ router.post('/updateservicedetail', upload.single('image'), function (req, res) 
                 let queryData = [serviceTitle, data.url, imageAlt, content, id]
                 db.query(query, queryData, function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -306,6 +310,7 @@ router.post('/updateservicedetail', upload.single('image'), function (req, res) 
         let queryData = [serviceTitle, req.body.image, imageAlt, content, id]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }
