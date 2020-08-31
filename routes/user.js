@@ -45,7 +45,7 @@ router.post('/updateuser', upload.none(), (req, res) => {
             throw err
             //res.status(409).send('Email is not unique.');
         } else {
-            res.status(200).send('User updated');
+            res.status(200).send(`User ${req.body.username} updated`);
         }
     })
 })
