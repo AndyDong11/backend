@@ -27,6 +27,18 @@ router.get('/getusers', upload.none(), (req, res) => {
     })
 });
 
+router.post('/updateuser', upload.none(), (req, res) => {
+    const query = 'UPDATE users SET email=? firstName=? lastName=? WHERE id=?';
+    const queryData = [req.body.email, req.body.firstName, req.body.lastName, req.body.id];
+    db.query(query, queryData, (err, rows) => {
+        if (err) {
+            throw err;
+        } else {
+            res.status(200);
+        }
+    })
+})
+
 router.get('/validate', function (req, res) {
     let { user } = req.cookies
     jwt.verify(user, process.env.TOKEN_SECRET, function (err, data) {
