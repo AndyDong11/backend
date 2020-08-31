@@ -19,6 +19,14 @@ router.post('/adduser', upload.none(), function (req, res) {
     });
 })
 
+router.get('/getusers', upload.none(), (req, res) => {
+    const query = 'SELECT id, username, email, firstName, lastName FROM users';
+    db.query(query, [], (err, rows) => {
+        if (err) throw err
+        res.send(rows);
+    })
+});
+
 router.get('/validate', function (req, res) {
     let { user } = req.cookies
     jwt.verify(user, process.env.TOKEN_SECRET, function (err, data) {
