@@ -50,6 +50,16 @@ router.post('/updateuser', upload.none(), (req, res) => {
     })
 })
 
+router.delete('/deleteuser', (req, res) => {
+    const { id } = req.query;
+    const query = 'DELETE FROM users WHERE id=?';
+    const queryData = [id];
+    db.query(query, queryData, (err, rows) => {
+        if (err) throw err
+        res.send(rows);
+    })
+})
+
 router.get('/validate', function (req, res) {
     let { user } = req.cookies
     jwt.verify(user, process.env.TOKEN_SECRET, function (err, data) {
