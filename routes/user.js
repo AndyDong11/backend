@@ -19,6 +19,47 @@ router.post('/adduser', upload.none(), function (req, res) {
     });
 })
 
+router.get('/getusers', upload.none(), (req, res) => {
+    const query = 'SELECT id, username, email, firstName, lastName FROM users';
+    db.query(query, [], (err, rows) => {
+        if (err) throw err
+
+        res.send(rows);
+    })
+});
+
+router.post('/updateuser', upload.none(), (req, res) => {
+    const {email, firstName, lastName, id} = req.body;
+    const query = 'UPDATE users SET email=?, firstName=?, lastName=? WHERE id=?';
+    const data = [email, firstName, lastName, id];
+    // Filter through so sql doesn't interpret null as 'null'
+    const queryData = data.map((field) => {
+        if (field === 'null' || field === 'undefined') {
+            return '';
+        } else {
+            return field;
+        }
+    });
+    db.query(query, queryData, (err, rows) => {
+        if (err) {
+            throw err
+            //res.status(409).send('Email is not unique.');
+        } else {
+            res.status(200).send(`User ${req.body.username} updated`);
+        }
+    })
+})
+
+router.delete('/deleteuser', (req, res) => {
+    const { id } = req.query;
+    const query = 'DELETE FROM users WHERE id=?';
+    const queryData = [id];
+    db.query(query, queryData, (err, rows) => {
+        if (err) throw err
+        res.send(rows);
+    })
+})
+
 router.get('/validate', function (req, res) {
     let { user } = req.cookies
     jwt.verify(user, process.env.TOKEN_SECRET, function (err, data) {
