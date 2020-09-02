@@ -6,7 +6,7 @@ var multer = require('multer')
 var upload = multer({ dest: 'uploads/' })
 // var s3 = require('../aws_s3')
 var { cloudinary } = require('../cloudinary')
-
+const deleteFiles = require('./../mixins/deleteFiles');
 
 
 // const params = {
@@ -47,6 +47,7 @@ router.post('/updatetechpartner', upload.single('image'), function (req, res) {
             if (data) {
                 db.query(query, [content, buttonText, buttonLink, imageAlt, data.url], function (err, rows) {
                     if (err) throw err
+                    deleteFiles([req.file]);
                     res.send(rows)
                 })
             }
@@ -55,6 +56,7 @@ router.post('/updatetechpartner', upload.single('image'), function (req, res) {
     else {
         db.query(query, [content, buttonText, buttonLink, imageAlt, req.body.image], function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }

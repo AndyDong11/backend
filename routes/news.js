@@ -4,6 +4,8 @@ var db = require('../db')
 var multer = require('multer')
 var upload = multer({ dest: 'uploads/' })
 var fs = require('fs')
+var cloudinary = require('../cloudinary');
+const deleteFiles = require('./../mixins/deleteFiles');
 // var s3 = require('../aws_s3')
 
 // const params = {
@@ -36,7 +38,10 @@ async function read(file) {
 
         await cloudinary.uploader.upload(file.path, function (err, data) {
             if (err) { reject(err) }
-            if (data) { resolve(data.url) }
+            if (data) {
+                deleteFiles([file]);
+                resolve(data.url)
+            }
         })
 
     })

@@ -4,6 +4,7 @@ var multer = require('multer')
 var upload = multer({ dest: 'uploads/' })
 var fs = require('fs')
 var { cloudinary } = require('../cloudinary')
+const deleteFiles = require('./../mixins/deleteFiles');
 // var s3 = require('../aws_s3')
 
 // const params = {
@@ -25,7 +26,10 @@ router.post('/image', upload.single('image'), function (req, res) {
 
     cloudinary.uploader.upload(req.file.path, function (err, data) {
         if (err) { console.log("Error", err) }
-        if (data) { res.send({ location: data.url }) }
+        if (data) {
+            deleteFiles([req.file]);
+            res.send({ location: data.url })
+        }
     })
 })
 

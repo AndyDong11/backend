@@ -1,3 +1,4 @@
+const deleteFiles = require('../mixins/deleteFiles');
 var express = require('express')
 var router = express.Router();
 var multer = require('multer')
@@ -12,6 +13,7 @@ var transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS
     }
 });
+var fs = require('fs');
 
 router.post('/', upload.array('attachments'), function (req, res) {
 
@@ -40,9 +42,12 @@ router.post('/', upload.array('attachments'), function (req, res) {
             throw error
         } else {
             console.log('Email sent: ' + info.response);
+            deleteFiles(mailOptions.attachments);
             res.send('Success')
         }
     });
+
+
 
 });
 

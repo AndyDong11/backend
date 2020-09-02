@@ -5,6 +5,7 @@ var multer = require('multer')
 var upload = multer({ dest: 'uploads/' })
 var fs = require('fs')
 var { cloudinary } = require('../cloudinary')
+const deleteFiles = require('./../mixins/deleteFiles');
 // var s3 = require('../aws_s3')
 
 // const params = {
@@ -115,6 +116,7 @@ router.post('/addblog', upload.array('images'), function (req, res) {
         let queryData = [headerImage, headerImageAlt, category, title, content, authorName, authorImage, authorImageAlt, postedDate]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
+            deleteFiles([req.file]);
             res.send(rows)
         })
     }, reason => {
