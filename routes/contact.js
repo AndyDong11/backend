@@ -1,5 +1,5 @@
 const deleteFiles = require('../mixins/deleteFiles');
-const capitalize = require('../mixins/capitalize');
+const capitalize = require('../mixins/sentenceCase');
 var express = require('express')
 var router = express.Router();
 var multer = require('multer')
