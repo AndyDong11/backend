@@ -25,7 +25,7 @@ router.post('/', upload.array('attachments'), function (req, res) {
 
     let htmlTable = "<table border=\'1'\>"
     Object.keys(req.body).forEach((key) => {
-        htmlTable += `<tr><th>${key.to}</th>`
+        htmlTable += `<tr><th>${capitalize(key)}</th><td>${req.body[key]}</td></tr>`
     })
     htmlTable += "</table>"
 
@@ -33,12 +33,7 @@ router.post('/', upload.array('attachments'), function (req, res) {
         from: process.env.FROM_EMAIL,
         to: process.env.TO_EMAIL,
         subject: name + ' : ' + subject,
-        html: "<table border=\'1\'>" + 
-                "<tr><th>Name</th><td>" + name + "</td></tr>" + 
-                "<tr><th>Email</th><td>" + email + "</td></tr>" +
-                "<tr><th>Subject</th><td>" + subject + "</td></tr>" +
-                "<tr><th>Message</th><td>" + message + "</td></tr>" + 
-              "</table>",
+        html: htmlTable,
         attachments: []
     };
 
