@@ -18,8 +18,7 @@ var fs = require('fs');
 
 router.post('/', upload.array('attachments'), function (req, res) {
 
-    const name = req.body.name
-    const subject= req.body.subject
+    const { name, subject } = req.body
 
     let htmlTable = "<table border=\'1'\>"
     Object.keys(req.body).forEach((key) => {
