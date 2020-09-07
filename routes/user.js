@@ -5,13 +5,15 @@ var multer = require('multer');
 var upload = multer({ dest: 'uploads/' })
 var bcrypt = require('bcrypt')
 var jwt = require('jsonwebtoken')
+var moment = require('moment')
 
 router.post('/adduser', upload.none(), function (req, res) {
     let { username, password, email, firstName, lastName } = req.body
+    const dateTimeSql = moment().format("YYYY-MM-DD HH:mm:ss")
     bcrypt.hash(password, 10, function (err, hash) {
         if (err) throw err
-        let query = 'INSERT INTO users (username, passwrd, firstName, lastName, email) VALUES (?, ?, ?, ?, ?)'
-        let queryData = [username, hash, firstName, lastName, email]
+        let query = 'INSERT INTO users (username, passwrd, firstName, lastName, email, dateCreated) VALUES (?, ?, ?, ?, ?, ?)'
+        let queryData = [username, hash, firstName, lastName, email, dateTimeSql]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
             res.send(rows)
@@ -20,7 +22,7 @@ router.post('/adduser', upload.none(), function (req, res) {
 })
 
 router.get('/getusers', upload.none(), (req, res) => {
-    const query = 'SELECT id, username, email, firstName, lastName FROM users';
+    const query = 'SELECT id, username, email, firstName, lastName, dateCreated FROM users';
     db.query(query, [], (err, rows) => {
         if (err) throw err
 
