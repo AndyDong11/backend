@@ -31,15 +31,8 @@ router.get('/getusers', upload.none(), (req, res) => {
 router.post('/updateuser', upload.none(), (req, res) => {
     const {email, firstName, lastName, id} = req.body;
     const query = 'UPDATE users SET email=?, firstName=?, lastName=? WHERE id=?';
-    const data = [email, firstName, lastName, id];
-    // Filter through so sql doesn't interpret null as 'null'
-    const queryData = data.map((field) => {
-        if (field === 'null' || field === 'undefined') {
-            return '';
-        } else {
-            return field;
-        }
-    });
+    const queryData = [email, firstName, lastName, id];
+
     db.query(query, queryData, (err, rows) => {
         if (err) {
             throw err
