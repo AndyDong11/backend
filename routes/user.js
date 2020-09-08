@@ -9,7 +9,7 @@ var moment = require('moment')
 
 router.post('/adduser', upload.none(), function (req, res) {
     let { username, password, email, firstName, lastName } = req.body
-    const dateTimeSql = moment().utc().format("YYYY-MM-DD HH:mm:ss")
+    const dateTimeSql = moment().format("YYYY-MM-DD HH:mm:ss")
     bcrypt.hash(password, 10, function (err, hash) {
         if (err) throw err
         let query = 'INSERT INTO users (username, passwrd, firstName, lastName, email, dateCreated) VALUES (?, ?, ?, ?, ?, ?)'
