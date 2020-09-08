@@ -1,4 +1,5 @@
 const deleteFiles = require('../mixins/deleteFiles');
+const capitalize = require('../mixins/sentenceCase');
 var express = require('express')
 var router = express.Router();
 var multer = require('multer')
@@ -17,21 +18,19 @@ var fs = require('fs');
 
 router.post('/', upload.array('attachments'), function (req, res) {
 
-    const name = req.body.name
-    const email = req.body.email
-    const subject= req.body.subject
-    const message = req.body.message
+    const { name, subject } = req.body
+
+    let htmlTable = "<table border=\'1'\>"
+    Object.keys(req.body).forEach((key) => {
+        htmlTable += `<tr><th>${capitalize(key)}</th><td>${req.body[key]}</td></tr>`
+    })
+    htmlTable += "</table>"
 
     var mailOptions = {
         from: process.env.FROM_EMAIL,
         to: process.env.TO_EMAIL,
         subject: name + ' : ' + subject,
-        html: "<table border=\'1\'>" + 
-                "<tr><th>Name</th><td>" + name + "</td></tr>" + 
-                "<tr><th>Email</th><td>" + email + "</td></tr>" +
-                "<tr><th>Subject</th><td>" + subject + "</td></tr>" +
-                "<tr><th>Message</th><td>" + message + "</td></tr>" + 
-              "</table>",
+        html: htmlTable,
         attachments: []
     };
 
