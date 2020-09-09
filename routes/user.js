@@ -22,8 +22,28 @@ router.post('/adduser', upload.none(), function (req, res) {
 })
 
 router.get('/getusers', upload.none(), (req, res) => {
-    const query = 'SELECT id, username, email, firstName, lastName, dateCreated FROM users';
-    db.query(query, [], (err, rows) => {
+    const { searchCriteria } = req.query
+
+    let query = 'SELECT id, username, email, firstName, lastName, dateCreated FROM users';
+    let queryData = []
+
+    // Builds query to search through each column if there is a searchCriteria
+    if (searchCriteria) {
+        query += ' WHERE '
+
+        const searchColumns = ['username', 'email', 'firstName', 'lastName']
+        for (let i in searchColumns) {
+            // Ensures no trailing ' OR '
+            if (i == searchColumns.length - 1) {
+                query += `${searchColumns[i]} LIKE ?`
+            } else {
+                query += `${searchColumns[i]} LIKE ? OR `
+            }
+            queryData.push(`%${searchCriteria}%`)
+        }
+    }
+
+    db.query(query, queryData, (err, rows) => {
         if (err) throw err
 
         res.send(rows);
