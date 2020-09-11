@@ -3,6 +3,9 @@ var express = require('express');
 var http = require('http');
 var cors = require('cors')
 var cookieParser = require('cookie-parser')
+var session = require('express-session');
+var db = require('db.js');
+var MySQLStore = require('express-mysql-session')(session);
 
 var user = require('./routes/user')
 var services = require('./routes/services')
