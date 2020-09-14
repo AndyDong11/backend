@@ -61,11 +61,26 @@ router.delete('/deleteuser', (req, res) => {
 })
 
 router.get('/validate', function (req, res) {
-    let { user } = req.cookies
-    jwt.verify(user, process.env.TOKEN_SECRET, function (err, data) {
-        if (err) { res.sendStatus(403) }
-        else {
-            res.json({ validated: true })
+
+    let { userId } = req.session
+    const query = 'SELECT department FROM users WHERE id=?'
+
+    db.query(query, [userId],(err, rows) => {
+        if (err) throw err
+        if (rows) {
+            const { department } = rows[0]
+            if (req.query.urlPath === '/admin/settings/users') {
+                const validDepartments = ['hr', 'it']
+                if (validDepartments.includes(department.toLowerCase())) {
+                    res.json({validated: true})
+                } else {
+                    res.sendStatus(403);
+                }
+            } else {
+                res.json({validated: true})
+            }
+        } else {
+            res.sendStatus(403);
         }
     })
 })
@@ -81,11 +96,8 @@ router.post('/login', upload.none(), function (req, res) {
             bcrypt.compare(password, rows[0].passwrd, function (err, result) {
                 if (!result) { res.status(500).send('Incorrect username or password') }
                 else {
-                    let token = jwt.sign({ username: username }, process.env.TOKEN_SECRET, { expiresIn: '1800s' })
-                    let query = 'UPDATE users SET token=? WHERE ID=?'
-                    let queryData = [token, rows[0].id]
-                    db.query(query, queryData)
-                    res.send(token)
+                    req.session.userId = rows[0].id
+                    res.status(200).send(req.session.cookie)
                 }
             })
         }
