@@ -4,7 +4,7 @@ var http = require('http');
 var cors = require('cors')
 var cookieParser = require('cookie-parser')
 var session = require('express-session');
-var db = require('db.js');
+var db = require('./db');
 var MySQLStore = require('express-mysql-session')(session);
 
 var user = require('./routes/user')
@@ -23,6 +23,8 @@ var footer = require('./routes/footer')
 
 var app = express();
 
+var sessionStore = new MySQLStore({}, db.promise())
+
 app.use(
     cors({
         origin: "http://localhost:3000", // restrict calls to this address
@@ -31,6 +33,17 @@ app.use(
 );
 
 app.use(cookieParser())
+
+app.use(session({
+    secret: process.env.TOKEN_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 // Expires after a day
+    }
+}));
 
 app.use('/user', user)
 app.use('/services', services)
