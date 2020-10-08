@@ -5,13 +5,15 @@ var multer = require('multer');
 var upload = multer({ dest: 'uploads/' })
 var bcrypt = require('bcrypt')
 var jwt = require('jsonwebtoken')
+var moment = require('moment')
 
 router.post('/adduser', upload.none(), function (req, res) {
     let { username, password, email, firstName, lastName } = req.body
+    const dateTimeSql = moment().format("YYYY-MM-DD HH:mm:ss")
     bcrypt.hash(password, 10, function (err, hash) {
         if (err) throw err
-        let query = 'INSERT INTO users (username, passwrd, firstName, lastName, email) VALUES (?, ?, ?, ?, ?)'
-        let queryData = [username, hash, firstName, lastName, email]
+        let query = 'INSERT INTO users (username, passwrd, firstName, lastName, email, dateCreated) VALUES (?, ?, ?, ?, ?, ?)'
+        let queryData = [username, hash, firstName, lastName, email, dateTimeSql]
         db.query(query, queryData, function (err, rows) {
             if (err) throw err
             res.send(rows)
@@ -20,8 +22,28 @@ router.post('/adduser', upload.none(), function (req, res) {
 })
 
 router.get('/getusers', upload.none(), (req, res) => {
-    const query = 'SELECT id, username, email, firstName, lastName FROM users';
-    db.query(query, [], (err, rows) => {
+    const { searchCriteria } = req.query
+
+    let query = 'SELECT id, username, email, firstName, lastName, dateCreated FROM users';
+    let queryData = []
+
+    // Builds query to search through each column if there is a searchCriteria
+    if (searchCriteria) {
+        query += ' WHERE '
+
+        const searchColumns = ['username', 'email', 'firstName', 'lastName']
+        for (let i in searchColumns) {
+            // Ensures no trailing ' OR '
+            if (i == searchColumns.length - 1) {
+                query += `${searchColumns[i]} LIKE ?`
+            } else {
+                query += `${searchColumns[i]} LIKE ? OR `
+            }
+            queryData.push(`%${searchCriteria}%`)
+        }
+    }
+
+    db.query(query, queryData, (err, rows) => {
         if (err) throw err
 
         res.send(rows);
@@ -31,15 +53,8 @@ router.get('/getusers', upload.none(), (req, res) => {
 router.post('/updateuser', upload.none(), (req, res) => {
     const {email, firstName, lastName, id} = req.body;
     const query = 'UPDATE users SET email=?, firstName=?, lastName=? WHERE id=?';
-    const data = [email, firstName, lastName, id];
-    // Filter through so sql doesn't interpret null as 'null'
-    const queryData = data.map((field) => {
-        if (field === 'null' || field === 'undefined') {
-            return '';
-        } else {
-            return field;
-        }
-    });
+    const queryData = [email, firstName, lastName, id];
+
     db.query(query, queryData, (err, rows) => {
         if (err) {
             throw err
